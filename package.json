@@ -1,0 +1,24 @@
+{
+  "name": "expopass-registration-playwright-suite",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Safe, synthetic-data Playwright coverage for the Expopass visitor registration form",
+  "scripts": {
+    "test": "playwright test --project=chromium",
+    "test:smoke": "playwright test --project=chromium --grep @smoke",
+    "test:validation": "playwright test --project=chromium --grep @validation",
+    "test:ui": "playwright test --project=chromium --grep @responsive",
+    "test:a11y": "playwright test --project=chromium --grep @accessibility",
+    "test:submission": "RUN_SUBMISSION=1 playwright test --project=chromium --grep @submission",
+    "test:cross-browser": "CROSS_BROWSER=1 playwright test --grep @smoke",
+    "test:headed": "playwright test --project=chromium --headed",
+    "test:debug": "PWDEBUG=1 playwright test --project=chromium --grep @smoke",
+    "report": "playwright show-report",
+    "generate:matrix": "node scripts/generate-matrix.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^22.20.1",
+    "typescript": "^5.7.0"
+  }
+}
