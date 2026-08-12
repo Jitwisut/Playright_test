@@ -77,6 +77,38 @@ npm run report
 
 `npm run report` ไม่ได้รัน test ใหม่ แต่เปิด report ล่าสุดที่อยู่ใน `playwright-report/`
 
+## Python Playwright Example
+
+โปรเจกต์มีตัวอย่าง Python ที่แก้ locator, validation, upload safety และ full-page screenshot แล้วใน `python_tests/test_registration_fixed.py`
+
+สร้าง virtual environment และติดตั้ง dependencies:
+
+```bash
+python3 -m venv .venv-python
+.venv-python/bin/pip install -r requirements-python.txt
+.venv-python/bin/playwright install chromium
+```
+
+รันทุกเคส:
+
+```bash
+.venv-python/bin/pytest -q python_tests/test_registration_fixed.py
+```
+
+รันแบบเปิด browser ให้เห็นการทำงาน:
+
+```bash
+PW_HEADLESS=0 .venv-python/bin/pytest -q -s python_tests/test_registration_fixed.py
+```
+
+รันเฉพาะ Test Case:
+
+```bash
+.venv-python/bin/pytest -q -s python_tests/test_registration_fixed.py -k "reg_018"
+```
+
+ภาพของทุก Test จะถูกสร้างที่ `screenshots/python/` ด้วย `full_page=True` ซึ่งหมายถึงแคปเนื้อหาเว็บตั้งแต่บนสุดถึงล่างสุด ไม่รวม browser toolbar หรือ desktop ของระบบปฏิบัติการ
+
 ## Test Commands
 
 | Command | รายละเอียด |

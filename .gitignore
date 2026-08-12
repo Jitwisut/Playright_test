@@ -4,3 +4,7 @@ test-results/
 blob-report/
 *.local
 .DS_Store
+.venv-python/
+.pytest_cache/
+__pycache__/
+screenshots/
