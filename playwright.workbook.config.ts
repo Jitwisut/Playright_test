@@ -10,23 +10,9 @@ const projects: Parameters<typeof defineConfig>[0]['projects'] = [
   },
 ];
 
-if (process.env.WORKBOOK_CROSS_BROWSER === '1') {
-  if (process.platform === 'win32') {
-    projects?.push({
-      name: 'edge',
-      use: { ...devices['Desktop Edge'], browserName: 'chromium', channel: 'msedge' },
-    });
-  }
-  projects?.push(
-    { name: 'firefox', use: { ...devices['Desktop Firefox'], browserName: 'firefox' } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'], browserName: 'webkit' } },
-  );
-}
-
 export default defineConfig({
-  globalSetup: require.resolve('./workbook-tests/excel-environment'),
   testDir: './workbook-tests',
-  testMatch: '**/*.spec.ts',
+  testMatch: /(?:registration-page|live-registration-flow)\.spec\.ts/,
   fullyParallel: false,
   workers: 1,
   retries: 0,

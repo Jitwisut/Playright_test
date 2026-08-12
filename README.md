@@ -10,7 +10,7 @@ https://registration.expopass.co/register/form/kiso26/ThqcXW
 
 ชุดทดสอบนี้มี Logical Test Cases จำนวน 400 cases ครอบคลุม Smoke, Validation, Boundary, Negative, Responsive, Accessibility, Upload, Network/Error Handling และ Browser State
 
-นอกจากนี้มีชุด `Web Registration Online` จำนวน 114 Test IDs ที่สร้างตามไฟล์ Excel แยก config/report จาก 400 เคสเดิม
+นอกจากนี้มีชุดทดสอบเฉพาะหน้า Registration URL นี้ แยก config/report จาก 400 เคสเดิม
 
 ## ข้อควรระวังด้าน Production Safety
 
@@ -79,16 +79,16 @@ npm run report
 
 `npm run report` ไม่ได้รัน test ใหม่ แต่เปิด report ล่าสุดที่อยู่ใน `playwright-report/`
 
-## ชุด Web Registration Online จาก Excel
+## ชุดทดสอบเฉพาะหน้า Registration
 
-ชุดนี้อ้างอิงรหัสในชีต `Web Registration Online` รวม 114 IDs:
+Target เดียวของชุดนี้คือ:
 
-- Registration `REG-001–REG-043`: 43 เคส
-- Questionnaire `QN-001–QN-040`: 40 เคส
-- Complete `CMP-001–CMP-009`, `CMP-011–CMP-026`: 25 เคส (`CMP-010` ไม่มีใน Excel)
-- Conference `CFR-001–CFR-004`: 4 เคส
-- Email `EMF-001`: 1 เคส
-- Invite Friend `INF-001`: 1 เคส — เปิดและตรวจสอบลิงก์ใน Excel `F120`
+```text
+https://registration.expopass.co/register/form/kiso26/ThqcXW
+```
+
+ครอบคลุมการเปิดหน้า, required validation, email/mobile validation, dropdown,
+upload, refresh, SQL/XSS input safety, placeholder, tab order, copy/paste และ responsive layout
 
 ตรวจรายชื่อทั้งหมดโดยไม่รัน:
 
@@ -96,16 +96,10 @@ npm run report
 npm run test:workbook:list
 ```
 
-รันทุกเคสที่มี environment พร้อม โดยเคสที่ขาด session/credentials จะถูก skip พร้อมเหตุผล:
+รันทุก Safe UI test ของหน้า Registration:
 
 ```bash
 npm run test:workbook
-```
-
-รันเฉพาะ Registration ซึ่งค่าเริ่มต้นจะบล็อก Production save/upload:
-
-```bash
-npm run test:workbook:registration
 ```
 
 รันแบบเห็น Browser:
@@ -114,7 +108,7 @@ npm run test:workbook:registration
 npm run test:workbook:headed
 ```
 
-เปิด report ของชุด Excel:
+เปิด report:
 
 ```bash
 npm run report:workbook
@@ -128,47 +122,19 @@ test-results-workbook/
 
 แต่ละรอบรัน Playwright จะสร้างผลลัพธ์ใหม่ในโฟลเดอร์นี้ หากต้องการเก็บรูปไว้ระยะยาวให้คัดลอกออกก่อนรันรอบถัดไป
 
-รันรหัสเดียว:
+### Live Registration Flow: รอคนทำ hCaptcha
 
-```bash
-npx playwright test -c playwright.workbook.config.ts --grep "REG-018"
-```
-
-### เตรียม Questionnaire และ Complete session บน Windows PowerShell
-
-URL ของ Questionnaire และ Complete เกิดหลัง Submit จึงต้องใช้ URL/session จาก Test หรือ Staging environment:
+คำสั่งนี้กรอก Registration อัตโนมัติ, รอให้คนทำ hCaptcha ใน Browser,
+จากนั้นกด Submit และแนบภาพก่อน/หลัง Submit เข้า HTML report โดยจะสร้าง Gmail alias ใหม่ทุกครั้ง
+เพื่อไม่ใช้ account ซ้ำ:
 
 ```powershell
-$env:WORKBOOK_QUESTIONNAIRE_URL="https://test.example/questionnaire/session-id"
-$env:WORKBOOK_COMPLETE_URL="https://test.example/complete/session-id"
-$env:WORKBOOK_STORAGE_STATE="C:\secure\workbook-storage-state.json"
-
-npm run test:workbook:questionnaire
-npm run test:workbook:complete
+$env:WORKBOOK_TEST_EMAIL="your-gmail@gmail.com"
+npm run test:workbook:live-flow
 ```
 
-### Conference credentials
-
-ไม่เก็บ Username/Password ที่อยู่ใน Excel ลง Git ให้กำหนดเฉพาะใน terminal หรือ CI secret store:
-
-```powershell
-$env:WORKBOOK_CONFERENCE_URL="https://test.example/login"
-$env:WORKBOOK_CONFERENCE_USER="your-test-user"
-$env:WORKBOOK_CONFERENCE_PASSWORD="your-test-password"
-
-npm run test:workbook:external
-```
-
-### ตรวจ Email
-
-Export message จาก test mailbox เป็น JSON โดยใช้โครงสร้างตาม `test-data/mail-fixture.example.json` แล้วรัน:
-
-```powershell
-$env:WORKBOOK_EMAIL_FIXTURE="C:\secure\registration-email.json"
-npm run test:workbook:external
-```
-
-รายละเอียด dependency, environment variables, expected failures และ Production safety อยู่ที่ `docs/web-registration-online-automation.md`
+ระหว่าง Browser เปิดอยู่ ให้ทำ hCaptcha ด้วยตนเอง แล้วปล่อยให้ test ทำงานต่อเอง
+ผลและภาพดูได้ด้วย `npm run report:workbook`
 
 ## Python Playwright Example
 
@@ -351,12 +317,12 @@ $env:PW_BROWSER="firefox"
 | `npm run test:headed` | รัน Chromium โดยเปิด browser ให้เห็น UI |
 | `npm run test:debug` | เปิด Playwright Inspector สำหรับ debug smoke tests |
 | `npm run report` | เปิด Playwright HTML report ล่าสุด |
-| `npm run test:workbook` | รัน 114 Test IDs ตามชีต Web Registration Online |
-| `npm run test:workbook:list` | แสดงรายชื่อ 114 tests โดยไม่รัน |
-| `npm run test:workbook:registration` | รัน REG-001–REG-043 แบบมี Production guard |
-| `npm run test:workbook:questionnaire` | รัน QN-001–QN-040 เมื่อมี Questionnaire session URL |
-| `npm run test:workbook:complete` | รัน CMP cases เมื่อมี Complete session URL |
-| `npm run test:workbook:external` | รัน Conference/Email และตรวจลิงก์ INF-001 จาก Excel |
+| `npm run test:workbook` | รัน Safe UI tests ของ Registration URL เท่านั้น |
+| `npm run test:workbook:list` | แสดงรายชื่อ Safe UI tests โดยไม่รัน |
+| `npm run test:workbook:registration` | Alias ของ Safe UI tests หน้า Registration |
+| `npm run test:workbook:headed` | รัน Safe UI tests โดยเปิด Browser |
+| `npm run test:workbook:live-flow` | กรอกและ Submit จริงหลังคนทำ hCaptcha |
+| `npm run test:workbook:page` | Alias ของ Safe UI tests โดยเปิด Browser |
 | `npm run report:workbook` | เปิด HTML report ที่ `playwright-report-workbook/` |
 | `npm run generate:matrix` | สร้าง `docs/test-case-matrix.md` ใหม่จาก test catalog |
 

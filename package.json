@@ -14,20 +14,18 @@
     "test:headed": "playwright test --project=chromium --headed",
     "test:debug": "PWDEBUG=1 playwright test --project=chromium --grep @smoke",
     "report": "playwright show-report",
-    "test:workbook": "playwright test -c playwright.workbook.config.ts",
-    "test:workbook:list": "playwright test -c playwright.workbook.config.ts --list",
-    "test:workbook:registration": "playwright test -c playwright.workbook.config.ts --grep @registration",
-    "test:workbook:questionnaire": "playwright test -c playwright.workbook.config.ts --grep @questionnaire",
-    "test:workbook:complete": "playwright test -c playwright.workbook.config.ts --grep @complete",
-    "test:workbook:external": "playwright test -c playwright.workbook.config.ts --grep \"@conference|@email-registration|@invite-friend\"",
-    "test:workbook:headed": "playwright test -c playwright.workbook.config.ts --headed",
+    "test:workbook": "playwright test -c playwright.workbook.config.ts --grep @page",
+    "test:workbook:list": "playwright test -c playwright.workbook.config.ts --grep @page --list",
+    "test:workbook:registration": "playwright test -c playwright.workbook.config.ts --grep @page",
+    "test:workbook:live-flow": "playwright test -c playwright.workbook.config.ts --grep @live-flow --headed",
+    "test:workbook:page": "playwright test -c playwright.workbook.config.ts --grep @page --headed",
+    "test:workbook:headed": "playwright test -c playwright.workbook.config.ts --grep @page --headed",
     "report:workbook": "playwright show-report playwright-report-workbook",
     "generate:matrix": "node scripts/generate-matrix.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
     "@types/node": "^22.20.1",
-    "read-excel-file": "^9.3.10",
     "typescript": "^5.7.0"
   }
 }
