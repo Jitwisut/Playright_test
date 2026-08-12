@@ -24,6 +24,7 @@ if (process.env.WORKBOOK_CROSS_BROWSER === '1') {
 }
 
 export default defineConfig({
+  globalSetup: require.resolve('./workbook-tests/excel-environment'),
   testDir: './workbook-tests',
   testMatch: '**/*.spec.ts',
   fullyParallel: false,

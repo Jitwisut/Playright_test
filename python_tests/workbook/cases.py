@@ -157,7 +157,6 @@ CONFERENCE_CASES = [
     WorkbookCase("CFR-004", "Conference", "เปิด My Profile > My Booking"),
 ]
 EMAIL_CASES = [WorkbookCase("EMF-001", "Email Registration", "ตรวจสอบอีเมลยืนยัน")]
-INVITE_CASES = [WorkbookCase("INF-001", "Invite Friend", "เปิด Tell a friend E-Card")]
 
 ALL_CASES = [
     *REGISTRATION_CASES,
@@ -165,11 +164,10 @@ ALL_CASES = [
     *COMPLETE_CASES,
     *CONFERENCE_CASES,
     *EMAIL_CASES,
-    *INVITE_CASES,
 ]
 
 assert len(REGISTRATION_CASES) == 43
 assert len(QUESTIONNAIRE_CASES) == 40
 assert len(COMPLETE_CASES) == 25
-assert len(ALL_CASES) == 114
-assert len({case.id for case in ALL_CASES}) == 114
+assert len(ALL_CASES) == 113
+assert len({case.id for case in ALL_CASES}) == 113

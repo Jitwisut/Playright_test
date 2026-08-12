@@ -7,9 +7,19 @@ from pathlib import Path
 import pytest
 from playwright.sync_api import Browser, Page, Playwright, sync_playwright
 
+from .excel_env import load_workbook_environment
+
 
 SCREENSHOT_DIR = Path("screenshots/python-workbook")
 VIEWPORT = {"width": 1440, "height": 900}
+LOADED_EXCEL_ENV = load_workbook_environment()
+
+
+def pytest_report_header() -> str | None:
+    if not LOADED_EXCEL_ENV:
+        return None
+    names = ", ".join(LOADED_EXCEL_ENV)
+    return f"workbook Excel defaults loaded (values hidden): {names}"
 
 
 @pytest.fixture(scope="session")

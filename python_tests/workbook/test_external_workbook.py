@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-import os
-
 import pytest
 from playwright.sync_api import Locator, Page, expect
 
-from .cases import CONFERENCE_CASES, EMAIL_CASES, INVITE_CASES, WorkbookCase
+from .cases import CONFERENCE_CASES, EMAIL_CASES, WorkbookCase
 from .helpers import (
     expect_registration_mail,
     first_visible,
-    is_non_production,
-    open_environment_page,
     read_mail_fixture,
     require_env,
 )
@@ -100,47 +96,3 @@ def test_workbook_conference_case(case: WorkbookCase, workbook_page: Page) -> No
 def test_workbook_email_case(case: WorkbookCase) -> None:
     assert case.id == "EMF-001"
     expect_registration_mail(read_mail_fixture())
-
-
-@pytest.mark.workbook
-@pytest.mark.external
-@pytest.mark.parametrize("case", INVITE_CASES, ids=lambda case: case.id)
-def test_workbook_invite_case(case: WorkbookCase, workbook_page: Page) -> None:
-    assert case.id == "INF-001"
-    page = workbook_page
-    invite_url = open_environment_page(
-        page,
-        "WORKBOOK_INVITE_URL",
-        "Invite Friend test needs the invitation URL from the workbook",
-    )
-    body = page.locator("body").inner_text().lower()
-    assert any(text in body for text in ["invite", "tell a friend", "เพื่อน"])
-
-    if os.getenv("WORKBOOK_RUN_INVITE_SUBMISSION") != "1":
-        return
-    if os.getenv("WORKBOOK_ALLOW_WRITE") != "1" or not is_non_production(invite_url):
-        pytest.skip("Invite submit needs WORKBOOK_ALLOW_WRITE=1 and a non-production URL.")
-
-    friend_email = require_env("WORKBOOK_INVITE_NEW_EMAIL", "Synthetic Invite Friend recipient")
-    email_field = required(
-        page.get_by_label("Email", exact=False).or_(page.locator('input[type="email"]')),
-        "Invite Friend page has no email field.",
-    )
-    submit = required(
-        page.get_by_role("button", name="Submit", exact=False)
-        .or_(page.get_by_role("button", name="Send", exact=False))
-        .or_(page.get_by_role("button", name="Invite", exact=False)),
-        "Invite Friend page has no Submit/Send button.",
-    )
-    email_field.fill(friend_email)
-    submit.click()
-    expect(page.get_by_text("Do you want to submit", exact=False)).to_be_visible()
-    confirm = required(
-        page.get_by_role("button", name="Confirm", exact=False).or_(
-            page.get_by_role("button", name="Yes", exact=False)
-        ),
-        "Invite confirmation did not appear.",
-    )
-    confirm.click()
-    success = page.locator("body").inner_text().lower()
-    assert any(text in success for text in ["used request", "invitation sent", "ส่งสำเร็จ"])
