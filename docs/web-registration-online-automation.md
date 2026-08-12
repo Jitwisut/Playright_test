@@ -11,9 +11,10 @@
 | Complete | CMP-001–CMP-009 และ CMP-011–CMP-026 | 25 |
 | Conference | CFR-001–CFR-004 | 4 |
 | Email Registration | EMF-001 | 1 |
-| รวม |  | 113 |
+| Invite Friend | INF-001 | 1 |
+| รวม |  | 114 |
 
-หมายเหตุ: ต้นฉบับไม่มี `CMP-010` และชุด Automation นี้ตัด Invite Friend ออกตามขอบเขตงานล่าสุด
+หมายเหตุ: ต้นฉบับไม่มี `CMP-010`; `INF-001` ตรวจว่า URL ใน `F120` เปิดได้และแสดงหน้าเว็บ โดยไม่ส่ง invitation หรือสร้างข้อมูล
 
 ## การแบ่งการรัน
 
@@ -22,6 +23,7 @@
 - `CMP-*` ต้องมี `WORKBOOK_COMPLETE_URL` ที่ผูกกับ test session ที่ลงทะเบียนสำเร็จ
 - `CFR-*` ต้องกำหนด URL และ credentials ผ่าน environment variables
 - `EMF-001` อ่าน JSON fixture ที่ export จาก test mailbox เพื่อไม่ผูก automation กับบัญชีอีเมลส่วนตัว
+- `INF-001` อ่าน URL จาก Excel `F120` และตรวจว่าเปิดได้โดยไม่ทำการ Submit
 
 ## Production safety
 
@@ -42,6 +44,7 @@
 | `WORKBOOK_CONFERENCE_USER` | CFR | Username จาก secret store/environment |
 | `WORKBOOK_CONFERENCE_PASSWORD` | CFR | Password จาก secret store/environment |
 | `WORKBOOK_EMAIL_FIXTURE` | EMF/CMP | Path ของ JSON message ตามตัวอย่าง `test-data/mail-fixture.example.json` |
+| `WORKBOOK_INVITE_URL` | INF | URL ที่อ่านจาก Excel `F120`; กำหนด `$env:` ทับได้ |
 | `WORKBOOK_STORAGE_STATE` | QN/CMP/CFR | Path ของ Playwright storage-state JSON ถ้าระบบต้องใช้ session |
 | `WORKBOOK_EXPECTED_NAME` | CMP | ชื่อ synthetic registrant ที่ควรแสดงบน Complete/Email |
 | `WORKBOOK_QUESTION_COUNT` | QN | จำนวนคำถามที่คาดหวัง ถ้าไม่กำหนดจะตรวจว่าอย่างน้อยหนึ่งข้อ |
@@ -65,12 +68,12 @@ Expected failure ยังคงรัน assertion ตาม Excel ถ้า be
 
 Python + pytest + Playwright implementation อยู่ใน `python_tests/workbook/`:
 
-- `cases.py` เป็น catalog 113 IDs และตรวจ duplicate IDs ตอน import
+- `cases.py` เป็น catalog 114 IDs และตรวจ duplicate IDs ตอน import
 - `conftest.py` จัดการ Browser, storage state, speed และ full-page screenshots
 - `test_registration_workbook.py` ครอบคลุม `REG-001–REG-043`
 - `test_questionnaire_workbook.py` ครอบคลุม `QN-001–QN-040`
 - `test_complete_workbook.py` ครอบคลุม Complete 25 IDs ตาม Excel
-- `test_external_workbook.py` ครอบคลุม Conference และ Email
+- `test_external_workbook.py` ครอบคลุม Conference, Email และการเปิด URL จาก Excel
 - `pytest-workbook.ini` กำหนด markers และ test path แยกจาก Python example เดิม
 
 คำสั่งหลัก:

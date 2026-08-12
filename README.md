@@ -10,7 +10,7 @@ https://registration.expopass.co/register/form/kiso26/ThqcXW
 
 ชุดทดสอบนี้มี Logical Test Cases จำนวน 400 cases ครอบคลุม Smoke, Validation, Boundary, Negative, Responsive, Accessibility, Upload, Network/Error Handling และ Browser State
 
-นอกจากนี้มีชุด `Web Registration Online` จำนวน 113 Test IDs ที่สร้างตามไฟล์ Excel โดยตัด Invite Friend ออก และแยก config/report จาก 400 เคสเดิม
+นอกจากนี้มีชุด `Web Registration Online` จำนวน 114 Test IDs ที่สร้างตามไฟล์ Excel แยก config/report จาก 400 เคสเดิม
 
 ## ข้อควรระวังด้าน Production Safety
 
@@ -81,13 +81,14 @@ npm run report
 
 ## ชุด Web Registration Online จาก Excel
 
-ชุดนี้อ้างอิงรหัสในชีต `Web Registration Online` รวม 113 IDs โดยไม่รวม Invite Friend:
+ชุดนี้อ้างอิงรหัสในชีต `Web Registration Online` รวม 114 IDs:
 
 - Registration `REG-001–REG-043`: 43 เคส
 - Questionnaire `QN-001–QN-040`: 40 เคส
 - Complete `CMP-001–CMP-009`, `CMP-011–CMP-026`: 25 เคส (`CMP-010` ไม่มีใน Excel)
 - Conference `CFR-001–CFR-004`: 4 เคส
 - Email `EMF-001`: 1 เคส
+- Invite Friend `INF-001`: 1 เคส — เปิดและตรวจสอบลิงก์ใน Excel `F120`
 
 ตรวจรายชื่อทั้งหมดโดยไม่รัน:
 
@@ -193,7 +194,7 @@ PW_HEADLESS=0 .venv-python/bin/pytest -q -s python_tests/test_registration_fixed
 
 ภาพของทุก Test จะถูกสร้างที่ `screenshots/python/` ด้วย `full_page=True` ซึ่งหมายถึงแคปเนื้อหาเว็บตั้งแต่บนสุดถึงล่างสุด ไม่รวม browser toolbar หรือ desktop ของระบบปฏิบัติการ
 
-### Python suite ตาม Excel จำนวน 113 IDs
+### Python suite ตาม Excel จำนวน 114 IDs
 
 ชุด Python ที่ตรงกับชีต `Web Registration Online` อยู่ใน `python_tests/workbook/` และแยกจากไฟล์ตัวอย่าง 20 เคสเดิม เพื่อป้องกันรหัส `REG-*` คนละความหมายชนกัน
 
@@ -205,14 +206,14 @@ py -m venv .venv-python
 .\.venv-python\Scripts\python.exe -m playwright install chromium
 ```
 
-ตรวจว่าพบครบ 113 tests โดยไม่รัน:
+ตรวจว่าพบครบ 114 tests โดยไม่รัน:
 
 ```powershell
 .\.venv-python\Scripts\python.exe -m pytest `
   -c .\pytest-workbook.ini --collect-only -q
 ```
 
-รันทั้ง 113 IDs โดยเคสที่ยังไม่มี session/credentials จะถูก skip พร้อมเหตุผล:
+รันทั้ง 114 IDs โดยเคสที่ยังไม่มี session/credentials จะถูก skip พร้อมเหตุผล:
 
 ```powershell
 .\.venv-python\Scripts\python.exe -m pytest `
@@ -283,6 +284,7 @@ $env:WORKBOOK_STORAGE_STATE="C:\secure\workbook-storage-state.json"
 `Web Registration Online`:
 
 - `F113` -> `WORKBOOK_CONFERENCE_USER` และ `WORKBOOK_CONFERENCE_PASSWORD`
+- `F120` -> `WORKBOOK_INVITE_URL` สำหรับ `INF-001`
 
 ค่าจะอยู่ใน memory เฉพาะตอนรัน pytest และจะไม่ถูกพิมพ์ลง terminal/report
 ถ้าตั้ง `$env:` ไว้เอง ค่าที่ตั้งเองจะถูกใช้แทน Excel เสมอ
@@ -315,7 +317,7 @@ $env:WORKBOOK_CONFERENCE_URL="https://uat.example.com/conference/login"
 npm run test:workbook:external
 ```
 
-Node จะอ่าน `F113` เป็น Conference username/password ค่าใน Excel จะไม่ถูกแสดงใน log/report และ `$env:` ที่ตั้งเอง
+Node จะอ่าน `F113` เป็น Conference username/password และ `F120` เป็นลิงก์ของ `INF-001` ค่าใน Excel จะไม่ถูกแสดงใน log/report และ `$env:` ที่ตั้งเอง
 จะมีสิทธิ์สูงกว่าค่าใน Excel เช่นเดียวกับชุด Python
 
 Cross-browser ใช้ `PW_BROWSER=chromium`, `edge`, `firefox` หรือ `webkit` ตัวอย่าง:
@@ -341,12 +343,12 @@ $env:PW_BROWSER="firefox"
 | `npm run test:headed` | รัน Chromium โดยเปิด browser ให้เห็น UI |
 | `npm run test:debug` | เปิด Playwright Inspector สำหรับ debug smoke tests |
 | `npm run report` | เปิด Playwright HTML report ล่าสุด |
-| `npm run test:workbook` | รัน 113 Test IDs ตามชีต Web Registration Online โดยไม่รวม Invite Friend |
-| `npm run test:workbook:list` | แสดงรายชื่อ 113 tests โดยไม่รัน |
+| `npm run test:workbook` | รัน 114 Test IDs ตามชีต Web Registration Online |
+| `npm run test:workbook:list` | แสดงรายชื่อ 114 tests โดยไม่รัน |
 | `npm run test:workbook:registration` | รัน REG-001–REG-043 แบบมี Production guard |
 | `npm run test:workbook:questionnaire` | รัน QN-001–QN-040 เมื่อมี Questionnaire session URL |
 | `npm run test:workbook:complete` | รัน CMP cases เมื่อมี Complete session URL |
-| `npm run test:workbook:external` | รัน Conference/Email เมื่อกำหนด environment |
+| `npm run test:workbook:external` | รัน Conference/Email และตรวจลิงก์ INF-001 จาก Excel |
 | `npm run report:workbook` | เปิด HTML report ที่ `playwright-report-workbook/` |
 | `npm run generate:matrix` | สร้าง `docs/test-case-matrix.md` ใหม่จาก test catalog |
 

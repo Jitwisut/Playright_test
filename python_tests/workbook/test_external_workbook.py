@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from playwright.sync_api import Locator, Page, expect
 
-from .cases import CONFERENCE_CASES, EMAIL_CASES, WorkbookCase
+from .cases import CONFERENCE_CASES, EMAIL_CASES, INVITE_CASES, WorkbookCase
 from .helpers import (
     expect_registration_mail,
     first_visible,
@@ -96,3 +96,16 @@ def test_workbook_conference_case(case: WorkbookCase, workbook_page: Page) -> No
 def test_workbook_email_case(case: WorkbookCase) -> None:
     assert case.id == "EMF-001"
     expect_registration_mail(read_mail_fixture())
+
+
+@pytest.mark.workbook
+@pytest.mark.external
+@pytest.mark.parametrize("case", INVITE_CASES, ids=lambda case: case.id)
+def test_workbook_invite_url(case: WorkbookCase, workbook_page: Page) -> None:
+    assert case.id == "INF-001"
+    page = workbook_page
+    invite_url = require_env("WORKBOOK_INVITE_URL", "INF-001 needs the URL in Excel cell F120")
+    response = page.goto(invite_url, wait_until="domcontentloaded")
+    assert response is not None
+    assert response.status < 400
+    assert page.locator("body").inner_text().strip()

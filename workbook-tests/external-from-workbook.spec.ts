@@ -77,3 +77,14 @@ for (const testCase of casesFor('Email Registration')) {
     expectRegistrationMail(message);
   });
 }
+
+for (const testCase of casesFor('Invite Friend')) {
+  test(workbookTitle(testCase), async ({ page }) => {
+    annotateExpected(testCase.expected);
+    const inviteUrl = requireEnv('WORKBOOK_INVITE_URL', 'INF-001 needs the URL in Excel cell F120');
+    const response = await page.goto(inviteUrl, { waitUntil: 'domcontentloaded' });
+    expect(response, 'The Excel URL should return an HTTP response').not.toBeNull();
+    expect(response!.status(), 'The Excel URL should not return an error page').toBeLessThan(400);
+    await expect(page.locator('body')).not.toBeEmpty();
+  });
+}

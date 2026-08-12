@@ -7,6 +7,7 @@ const WORKBOOK_FILENAME = 'Trainee BU3_ Manage Expopass.xlsx';
 const WORKSHEET_NAME = 'Web Registration Online';
 const EMAIL_PATTERN = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i;
 const PASSWORD_PATTERN = /(?:password|รหัสผ่าน)\s*[:=]?\s*([^\s]+)/i;
+const URL_PATTERN = /https?:\/\/[^\s]+/i;
 
 function discoverWorkbookPath(): string | undefined {
   if (process.env.WORKBOOK_XLSX_PATH) {
@@ -38,10 +39,12 @@ export async function loadExcelEnvironment(): Promise<string[]> {
 
   const rows = await readSheet(workbookPath, WORKSHEET_NAME);
   const conferenceText = String(rows[112]?.[5] ?? '');
+  const inviteText = String(rows[119]?.[5] ?? '');
   const loaded: string[] = [];
 
   setDefault('WORKBOOK_CONFERENCE_USER', conferenceText.match(EMAIL_PATTERN)?.[0], loaded);
   setDefault('WORKBOOK_CONFERENCE_PASSWORD', conferenceText.match(PASSWORD_PATTERN)?.[1], loaded);
+  setDefault('WORKBOOK_INVITE_URL', inviteText.match(URL_PATTERN)?.[0]?.replace(/[.,);\]]+$/, ''), loaded);
   return loaded;
 }
 

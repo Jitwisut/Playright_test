@@ -1,4 +1,4 @@
-export type WorkbookArea = 'Registration' | 'Questionnaire' | 'Complete' | 'Conference' | 'Email Registration';
+export type WorkbookArea = 'Registration' | 'Questionnaire' | 'Complete' | 'Conference' | 'Email Registration' | 'Invite Friend';
 
 export type WorkbookCase = {
   id: string;
@@ -130,6 +130,7 @@ const external: WorkbookCase[] = [
   { id: 'CFR-003', area: 'Conference', scenario: 'เปิด My Profile > My Profile', expected: 'แสดงหน้า My Profile' },
   { id: 'CFR-004', area: 'Conference', scenario: 'เปิด My Profile > My Booking', expected: 'แสดงหน้า My Booking' },
   { id: 'EMF-001', area: 'Email Registration', scenario: 'ตรวจสอบอีเมลยืนยัน', expected: 'Subject, Sender Email และ Sender Name ถูกต้อง' },
+  { id: 'INF-001', area: 'Invite Friend', scenario: 'เปิดลิงก์จาก Excel', expected: 'ลิงก์เปิดได้และแสดงหน้าเว็บ' },
 ];
 
 export const webRegistrationOnlineCases: WorkbookCase[] = [

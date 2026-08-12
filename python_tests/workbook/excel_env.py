@@ -15,6 +15,7 @@ PASSWORD_PATTERN = re.compile(
     r"(?:password|รหัสผ่าน)\s*[:=]?\s*([^\s]+)",
     re.IGNORECASE,
 )
+URL_PATTERN = re.compile(r"https?://[^\s]+", re.IGNORECASE)
 
 
 def discover_workbook_path() -> Path | None:
@@ -41,6 +42,11 @@ def _conference_credentials(value: object) -> tuple[str | None, str | None]:
     return email, password
 
 
+def _first_url(value: object) -> str | None:
+    match = URL_PATTERN.search(str(value or ""))
+    return match.group(0).rstrip(".,);]") if match else None
+
+
 def load_workbook_environment() -> tuple[str, ...]:
     """Load safe runtime defaults from the workbook without logging secret values."""
     if os.getenv("WORKBOOK_AUTOLOAD_EXCEL", "1") == "0":
@@ -57,9 +63,11 @@ def load_workbook_environment() -> tuple[str, ...]:
 
         sheet = workbook[WORKSHEET_NAME]
         conference_user, conference_password = _conference_credentials(sheet["F113"].value)
+        invite_url = _first_url(sheet["F120"].value)
         defaults = {
             "WORKBOOK_CONFERENCE_USER": conference_user,
             "WORKBOOK_CONFERENCE_PASSWORD": conference_password,
+            "WORKBOOK_INVITE_URL": invite_url,
         }
         loaded: list[str] = []
         for name, value in defaults.items():
