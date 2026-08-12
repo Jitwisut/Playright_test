@@ -12,7 +12,7 @@ const projects: Parameters<typeof defineConfig>[0]['projects'] = [
 
 export default defineConfig({
   testDir: './workbook-tests',
-  testMatch: /(?:registration-page|live-registration-flow)\.spec\.ts/,
+  testMatch: /registration-page\.spec\.ts/,
   fullyParallel: false,
   workers: 1,
   retries: 0,

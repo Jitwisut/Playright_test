@@ -87,8 +87,9 @@ Target เดียวของชุดนี้คือ:
 https://registration.expopass.co/register/form/kiso26/ThqcXW
 ```
 
-ครอบคลุมการเปิดหน้า, required validation, email/mobile validation, dropdown,
-upload, refresh, SQL/XSS input safety, placeholder, tab order, copy/paste และ responsive layout
+ครอบคลุมการเปิดหน้า, required validation, email/email-confirm/mobile validation,
+dropdown ประเทศและอุตสาหกรรม, upload capability, refresh, SQL/XSS input safety,
+placeholder, tab order, copy/paste, responsive layout และ Submit จริง
 
 ตรวจรายชื่อทั้งหมดโดยไม่รัน:
 
@@ -96,17 +97,20 @@ upload, refresh, SQL/XSS input safety, placeholder, tab order, copy/paste แล
 npm run test:workbook:list
 ```
 
-รันทุก Safe UI test ของหน้า Registration:
+ตั้งอีเมลที่จะใช้รับผลการสมัครจริงก่อน (อย่าใส่อีเมลลงใน source code):
+
+```powershell
+$env:WORKBOOK_TEST_EMAIL="your-gmail@gmail.com"
+```
+
+จากนั้นรันทุกเคสด้วยคำสั่งเดียว:
 
 ```bash
 npm run test:workbook
 ```
 
-รันแบบเห็น Browser:
-
-```bash
-npm run test:workbook:headed
-```
+Browser จะเปิดขึ้นเพื่อให้ทำ hCaptcha เองที่เคสสุดท้าย แล้ว test จะ Submit ต่ออัตโนมัติ
+และรอได้สูงสุด 10 นาที คำสั่ง `test:workbook:headed` เป็น alias ของคำสั่งเดียวกัน
 
 เปิด report:
 
@@ -122,19 +126,8 @@ test-results-workbook/
 
 แต่ละรอบรัน Playwright จะสร้างผลลัพธ์ใหม่ในโฟลเดอร์นี้ หากต้องการเก็บรูปไว้ระยะยาวให้คัดลอกออกก่อนรันรอบถัดไป
 
-### Live Registration Flow: รอคนทำ hCaptcha
-
-คำสั่งนี้กรอก Registration อัตโนมัติ, รอให้คนทำ hCaptcha ใน Browser,
-จากนั้นกด Submit และแนบภาพก่อน/หลัง Submit เข้า HTML report โดยจะสร้าง Gmail alias ใหม่ทุกครั้ง
-เพื่อไม่ใช้ account ซ้ำ:
-
-```powershell
-$env:WORKBOOK_TEST_EMAIL="your-gmail@gmail.com"
-npm run test:workbook:live-flow
-```
-
-ระหว่าง Browser เปิดอยู่ ให้ทำ hCaptcha ด้วยตนเอง แล้วปล่อยให้ test ทำงานต่อเอง
-ผลและภาพดูได้ด้วย `npm run report:workbook`
+เคส Submit สร้าง Gmail alias ใหม่จากอีเมลที่ตั้งไว้ทุกครั้ง เพื่อไม่ใช้ account ซ้ำ
+และแนบภาพก่อน/หลัง Submit รวมถึง URL หลัง Submit เข้า HTML report
 
 ## Python Playwright Example
 
@@ -281,19 +274,6 @@ $env:WORKBOOK_AUTOLOAD_EXCEL="0"
 $env:WORKBOOK_CONFERENCE_URL="https://uat.example.com/conference/login"
 ```
 
-Node/TypeScript suite โหลดค่า Excel แบบเดียวกันผ่าน Playwright `globalSetup`
-โดยไม่ต้องติดตั้ง Python:
-
-```powershell
-npm install
-$env:WORKBOOK_XLSX_PATH="C:\secure\Trainee BU3_ Manage Expopass.xlsx"
-$env:WORKBOOK_CONFERENCE_URL="https://uat.example.com/conference/login"
-npm run test:workbook:external
-```
-
-Node จะอ่าน `F113` เป็น Conference username/password และ `F120` เป็นลิงก์ของ `INF-001` ค่าใน Excel จะไม่ถูกแสดงใน log/report และ `$env:` ที่ตั้งเอง
-จะมีสิทธิ์สูงกว่าค่าใน Excel เช่นเดียวกับชุด Python
-
 Cross-browser ใช้ `PW_BROWSER=chromium`, `edge`, `firefox` หรือ `webkit` ตัวอย่าง:
 
 ```powershell
@@ -317,12 +297,9 @@ $env:PW_BROWSER="firefox"
 | `npm run test:headed` | รัน Chromium โดยเปิด browser ให้เห็น UI |
 | `npm run test:debug` | เปิด Playwright Inspector สำหรับ debug smoke tests |
 | `npm run report` | เปิด Playwright HTML report ล่าสุด |
-| `npm run test:workbook` | รัน Safe UI tests ของ Registration URL เท่านั้น |
-| `npm run test:workbook:list` | แสดงรายชื่อ Safe UI tests โดยไม่รัน |
-| `npm run test:workbook:registration` | Alias ของ Safe UI tests หน้า Registration |
-| `npm run test:workbook:headed` | รัน Safe UI tests โดยเปิด Browser |
-| `npm run test:workbook:live-flow` | กรอกและ Submit จริงหลังคนทำ hCaptcha |
-| `npm run test:workbook:page` | Alias ของ Safe UI tests โดยเปิด Browser |
+| `npm run test:workbook` | รันทุกเคสของ Registration URL รวม Submit จริงและรอ hCaptcha |
+| `npm run test:workbook:list` | แสดงรายชื่อทุกเคสโดยไม่รัน |
+| `npm run test:workbook:headed` | Alias ของ `test:workbook` |
 | `npm run report:workbook` | เปิด HTML report ที่ `playwright-report-workbook/` |
 | `npm run generate:matrix` | สร้าง `docs/test-case-matrix.md` ใหม่จาก test catalog |
 
