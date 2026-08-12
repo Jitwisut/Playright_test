@@ -10,6 +10,8 @@ https://registration.expopass.co/register/form/kiso26/ThqcXW
 
 ชุดทดสอบนี้มี Logical Test Cases จำนวน 400 cases ครอบคลุม Smoke, Validation, Boundary, Negative, Responsive, Accessibility, Upload, Network/Error Handling และ Browser State
 
+นอกจากนี้มีชุด `Web Registration Online` จำนวน 114 Test IDs ที่สร้างตามไฟล์ Excel แยก config/report จาก 400 เคสเดิม
+
 ## ข้อควรระวังด้าน Production Safety
 
 Target เป็นเว็บไซต์จริงหรือ production-like ดังนั้นโปรเจกต์นี้ถูกตั้งค่าให้ปลอดภัยเป็นค่าเริ่มต้น:
@@ -77,6 +79,89 @@ npm run report
 
 `npm run report` ไม่ได้รัน test ใหม่ แต่เปิด report ล่าสุดที่อยู่ใน `playwright-report/`
 
+## ชุด Web Registration Online จาก Excel
+
+ชุดนี้อ้างอิงรหัสในชีต `Web Registration Online` โดยตรง รวม 114 IDs:
+
+- Registration `REG-001–REG-043`: 43 เคส
+- Questionnaire `QN-001–QN-040`: 40 เคส
+- Complete `CMP-001–CMP-009`, `CMP-011–CMP-026`: 25 เคส (`CMP-010` ไม่มีใน Excel)
+- Conference `CFR-001–CFR-004`: 4 เคส
+- Email `EMF-001`: 1 เคส
+- Invite Friend `INF-001`: 1 เคส
+
+ตรวจรายชื่อทั้งหมดโดยไม่รัน:
+
+```bash
+npm run test:workbook:list
+```
+
+รันทุกเคสที่มี environment พร้อม โดยเคสที่ขาด session/credentials จะถูก skip พร้อมเหตุผล:
+
+```bash
+npm run test:workbook
+```
+
+รันเฉพาะ Registration ซึ่งค่าเริ่มต้นจะบล็อก Production save/upload:
+
+```bash
+npm run test:workbook:registration
+```
+
+รันแบบเห็น Browser:
+
+```bash
+npm run test:workbook:headed
+```
+
+เปิด report ของชุด Excel:
+
+```bash
+npm run report:workbook
+```
+
+รันรหัสเดียว:
+
+```bash
+npx playwright test -c playwright.workbook.config.ts --grep "REG-018"
+```
+
+### เตรียม Questionnaire และ Complete session บน Windows PowerShell
+
+URL ของ Questionnaire และ Complete เกิดหลัง Submit จึงต้องใช้ URL/session จาก Test หรือ Staging environment:
+
+```powershell
+$env:WORKBOOK_QUESTIONNAIRE_URL="https://test.example/questionnaire/session-id"
+$env:WORKBOOK_COMPLETE_URL="https://test.example/complete/session-id"
+$env:WORKBOOK_STORAGE_STATE="C:\secure\workbook-storage-state.json"
+
+npm run test:workbook:questionnaire
+npm run test:workbook:complete
+```
+
+### Conference credentials
+
+ไม่เก็บ Username/Password ที่อยู่ใน Excel ลง Git ให้กำหนดเฉพาะใน terminal หรือ CI secret store:
+
+```powershell
+$env:WORKBOOK_CONFERENCE_URL="https://test.example/login"
+$env:WORKBOOK_CONFERENCE_USER="your-test-user"
+$env:WORKBOOK_CONFERENCE_PASSWORD="your-test-password"
+
+npm run test:workbook:external
+```
+
+### ตรวจ Email
+
+Export message จาก test mailbox เป็น JSON โดยใช้โครงสร้างตาม `test-data/mail-fixture.example.json` แล้วรัน:
+
+```powershell
+$env:WORKBOOK_EMAIL_FIXTURE="C:\secure\registration-email.json"
+npm run test:workbook:external
+```
+
+รายละเอียด dependency, environment variables, expected failures และ Production safety อยู่ที่ `docs/web-registration-online-automation.md`
+
 ## Python Playwright Example
 
 โปรเจกต์มีตัวอย่าง Python ที่แก้ locator, validation, upload safety และ full-page screenshot แล้วใน `python_tests/test_registration_fixed.py`
@@ -123,6 +208,13 @@ PW_HEADLESS=0 .venv-python/bin/pytest -q -s python_tests/test_registration_fixed
 | `npm run test:headed` | รัน Chromium โดยเปิด browser ให้เห็น UI |
 | `npm run test:debug` | เปิด Playwright Inspector สำหรับ debug smoke tests |
 | `npm run report` | เปิด Playwright HTML report ล่าสุด |
+| `npm run test:workbook` | รัน 114 Test IDs ตามชีต Web Registration Online |
+| `npm run test:workbook:list` | แสดงรายชื่อ 114 tests โดยไม่รัน |
+| `npm run test:workbook:registration` | รัน REG-001–REG-043 แบบมี Production guard |
+| `npm run test:workbook:questionnaire` | รัน QN-001–QN-040 เมื่อมี Questionnaire session URL |
+| `npm run test:workbook:complete` | รัน CMP cases เมื่อมี Complete session URL |
+| `npm run test:workbook:external` | รัน Conference/Email/Invite เมื่อกำหนด environment |
+| `npm run report:workbook` | เปิด HTML report ที่ `playwright-report-workbook/` |
 | `npm run generate:matrix` | สร้าง `docs/test-case-matrix.md` ใหม่จาก test catalog |
 
 ### Default Regression

@@ -1,0 +1,8 @@
+{
+  "subject": "Your Pet Fair South-East Asia 2026 Registration",
+  "fromEmail": "support@eventthai.com",
+  "fromName": "Pet Fair South East",
+  "to": "qa-recipient@example.test",
+  "receivedAt": "2026-01-01T00:00:00Z",
+  "body": "Registration confirmation for Synthetic QA User"
+}

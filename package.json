@@ -14,6 +14,14 @@
     "test:headed": "playwright test --project=chromium --headed",
     "test:debug": "PWDEBUG=1 playwright test --project=chromium --grep @smoke",
     "report": "playwright show-report",
+    "test:workbook": "playwright test -c playwright.workbook.config.ts",
+    "test:workbook:list": "playwright test -c playwright.workbook.config.ts --list",
+    "test:workbook:registration": "playwright test -c playwright.workbook.config.ts --grep @registration",
+    "test:workbook:questionnaire": "playwright test -c playwright.workbook.config.ts --grep @questionnaire",
+    "test:workbook:complete": "playwright test -c playwright.workbook.config.ts --grep @complete",
+    "test:workbook:external": "playwright test -c playwright.workbook.config.ts --grep \"@conference|@email-registration|@invite-friend\"",
+    "test:workbook:headed": "playwright test -c playwright.workbook.config.ts --headed",
+    "report:workbook": "playwright show-report playwright-report-workbook",
     "generate:matrix": "node scripts/generate-matrix.mjs"
   },
   "devDependencies": {

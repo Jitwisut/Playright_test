@@ -1,6 +1,8 @@
 node_modules/
 playwright-report/
+playwright-report-workbook/
 test-results/
+test-results-workbook/
 blob-report/
 *.local
 .DS_Store
