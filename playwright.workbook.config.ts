@@ -41,7 +41,7 @@ export default defineConfig({
   use: {
     baseURL: registrationUrl,
     headless: process.env.PW_HEADLESS !== '0',
-    screenshot: { mode: 'only-on-failure', fullPage: true },
+    screenshot: { mode: 'on', fullPage: true },
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
     navigationTimeout: 30_000,

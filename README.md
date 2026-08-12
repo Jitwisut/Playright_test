@@ -120,6 +120,14 @@ npm run test:workbook:headed
 npm run report:workbook
 ```
 
+Node/TypeScript จะบันทึก Full-page screenshot ของทุก Workbook test ไว้ใน:
+
+```text
+test-results-workbook/
+```
+
+แต่ละรอบรัน Playwright จะสร้างผลลัพธ์ใหม่ในโฟลเดอร์นี้ หากต้องการเก็บรูปไว้ระยะยาวให้คัดลอกออกก่อนรันรอบถัดไป
+
 รันรหัสเดียว:
 
 ```bash
