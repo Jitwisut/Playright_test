@@ -194,6 +194,98 @@ PW_HEADLESS=0 .venv-python/bin/pytest -q -s python_tests/test_registration_fixed
 
 ภาพของทุก Test จะถูกสร้างที่ `screenshots/python/` ด้วย `full_page=True` ซึ่งหมายถึงแคปเนื้อหาเว็บตั้งแต่บนสุดถึงล่างสุด ไม่รวม browser toolbar หรือ desktop ของระบบปฏิบัติการ
 
+### Python suite ตาม Excel จำนวน 114 IDs
+
+ชุด Python ที่ตรงกับชีต `Web Registration Online` อยู่ใน `python_tests/workbook/` และแยกจากไฟล์ตัวอย่าง 20 เคสเดิม เพื่อป้องกันรหัส `REG-*` คนละความหมายชนกัน
+
+ติดตั้ง dependencies บน Windows PowerShell:
+
+```powershell
+py -m venv .venv-python
+.\.venv-python\Scripts\python.exe -m pip install -r .\requirements-python.txt
+.\.venv-python\Scripts\python.exe -m playwright install chromium
+```
+
+ตรวจว่าพบครบ 114 tests โดยไม่รัน:
+
+```powershell
+.\.venv-python\Scripts\python.exe -m pytest `
+  -c .\pytest-workbook.ini --collect-only -q
+```
+
+รันทั้ง 114 IDs โดยเคสที่ยังไม่มี session/credentials จะถูก skip พร้อมเหตุผล:
+
+```powershell
+.\.venv-python\Scripts\python.exe -m pytest `
+  -c .\pytest-workbook.ini -q
+```
+
+รันเฉพาะ Registration 43 เคสแบบ Production-safe:
+
+```powershell
+.\.venv-python\Scripts\python.exe -m pytest `
+  -c .\pytest-workbook.ini -q -m registration
+```
+
+รันแบบเปิด Browser และปรับความเร็ว:
+
+```powershell
+$env:PW_HEADLESS="0"
+$env:PW_SLOW_MO="1000"
+
+.\.venv-python\Scripts\python.exe -m pytest `
+  -c .\pytest-workbook.ini -q -s -m registration
+```
+
+รันรหัสเดียว เช่น `REG-018`:
+
+```powershell
+.\.venv-python\Scripts\python.exe -m pytest `
+  -c .\pytest-workbook.ini -q -k "REG-018"
+```
+
+สร้าง HTML report:
+
+```powershell
+New-Item -ItemType Directory -Force .\reports\python-workbook | Out-Null
+
+.\.venv-python\Scripts\python.exe -m pytest `
+  -c .\pytest-workbook.ini `
+  --html=.\reports\python-workbook\report.html `
+  --self-contained-html
+
+Start-Process .\reports\python-workbook\report.html
+```
+
+Screenshot แบบเต็มหน้าอยู่ที่:
+
+```text
+screenshots/python-workbook/
+```
+
+รัน Questionnaire หรือ Complete หลังมี test session URL:
+
+```powershell
+$env:WORKBOOK_QUESTIONNAIRE_URL="https://test.example/questionnaire/session-id"
+$env:WORKBOOK_COMPLETE_URL="https://test.example/complete/session-id"
+$env:WORKBOOK_STORAGE_STATE="C:\secure\workbook-storage-state.json"
+
+.\.venv-python\Scripts\python.exe -m pytest `
+  -c .\pytest-workbook.ini -q -m questionnaire
+
+.\.venv-python\Scripts\python.exe -m pytest `
+  -c .\pytest-workbook.ini -q -m complete
+```
+
+Cross-browser ใช้ `PW_BROWSER=chromium`, `edge`, `firefox` หรือ `webkit` ตัวอย่าง:
+
+```powershell
+$env:PW_BROWSER="firefox"
+.\.venv-python\Scripts\python.exe -m playwright install firefox
+.\.venv-python\Scripts\python.exe -m pytest `
+  -c .\pytest-workbook.ini -q -m registration
+```
+
 ## Test Commands
 
 | Command | รายละเอียด |

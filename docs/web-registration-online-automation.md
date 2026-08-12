@@ -65,3 +65,33 @@
 - `REG-021` และ `REG-022`: Event form ปัจจุบันไม่มี PDPA checkbox
 
 Expected failure ยังคงรัน assertion ตาม Excel ถ้า behavior ถูกแก้ในอนาคต Playwright จะรายงานว่า test ที่คาดว่าจะ fail กลับผ่าน เพื่อให้ทีมอัปเดตสถานะ defect
+
+## Python implementation
+
+Python + pytest + Playwright implementation อยู่ใน `python_tests/workbook/`:
+
+- `cases.py` เป็น catalog 114 IDs และตรวจ duplicate IDs ตอน import
+- `conftest.py` จัดการ Browser, storage state, speed และ full-page screenshots
+- `test_registration_workbook.py` ครอบคลุม `REG-001–REG-043`
+- `test_questionnaire_workbook.py` ครอบคลุม `QN-001–QN-040`
+- `test_complete_workbook.py` ครอบคลุม Complete 25 IDs ตาม Excel
+- `test_external_workbook.py` ครอบคลุม Conference, Email และ Invite Friend
+- `pytest-workbook.ini` กำหนด markers และ test path แยกจาก Python example เดิม
+
+คำสั่งหลัก:
+
+```bash
+.venv-python/bin/python -m pytest -c pytest-workbook.ini --collect-only -q
+.venv-python/bin/python -m pytest -c pytest-workbook.ini -q -m registration
+.venv-python/bin/python -m pytest -c pytest-workbook.ini -q
+```
+
+HTML report ใช้ `pytest-html` ที่ระบุใน `requirements-python.txt`:
+
+```bash
+.venv-python/bin/python -m pytest -c pytest-workbook.ini \
+  --html=reports/python-workbook/report.html \
+  --self-contained-html
+```
+
+Python suite ใช้ environment variables ชุดเดียวกับ TypeScript suite ในตารางด้านบน และไม่คัดลอก credentials จาก Excel ลง source code
